@@ -30,6 +30,25 @@ class OrderReadController(
     ): ResponseEntity<SuccessResponse<FindListResultDto<FindOrderResultDto>>> =
         ok(SuccessResponse(data = orderReadService.findOrders(pageNumber = pageNumber, pageSize = pageSize)))
 
+    @GetMapping("/{value}/status")
+    fun findOrdersByStatus(
+        @PathVariable
+        value: String,
+        @Positive @RequestParam(defaultValue = "1")
+        pageNumber: Int,
+        @Positive @RequestParam(defaultValue = "10")
+        pageSize: Int,
+    ): ResponseEntity<SuccessResponse<FindListResultDto<FindOrderResultDto>>> =
+        ok(
+            SuccessResponse(
+                data = orderReadService.findOrdersByStatus(
+                    status = value,
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                ),
+            ),
+        )
+
     @GetMapping("/{id}")
     fun findOrder(
         @Positive @PathVariable
