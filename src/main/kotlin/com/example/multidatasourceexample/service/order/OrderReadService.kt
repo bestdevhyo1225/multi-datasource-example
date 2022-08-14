@@ -6,8 +6,10 @@ import com.example.multidatasourceexample.domain.order.entity.OrderStatus
 import com.example.multidatasourceexample.domain.order.repository.OrderReadRepository
 import com.example.multidatasourceexample.service.dto.FindListResultDto
 import com.example.multidatasourceexample.service.dto.FindOrderResultDto
+import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionSynchronizationManager
 
 @Service
 @Transactional(transactionManager = "orderTransactionManager", readOnly = true)
@@ -15,8 +17,15 @@ class OrderReadService(
     private val orderReadRepository: OrderReadRepository,
 ) {
 
-    fun findOrders(pageNumber: Int, pageSize: Int): FindListResultDto<FindOrderResultDto> =
-        orderReadRepository
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
+    fun findOrders(pageNumber: Int, pageSize: Int): FindListResultDto<FindOrderResultDto> {
+        logger.info(
+            "[ IN ] ---> findOrders(), isReadOnly: {}",
+            TransactionSynchronizationManager.isCurrentTransactionReadOnly(),
+        )
+
+        val findOrderResultDto = orderReadRepository
             .findAllByLimitAndOffset(limit = pageSize, offset = pageNumber.minus(1).times(pageSize))
             .let { result: Pair<List<Order>, Long> ->
                 FindListResultDto(
@@ -26,6 +35,11 @@ class OrderReadService(
                     total = result.second,
                 )
             }
+
+        logger.info("[ OUT ] <--- findOrders()")
+
+        return findOrderResultDto
+    }
 
     fun findOrdersByStatus(status: String, pageNumber: Int, pageSize: Int): FindListResultDto<FindOrderResultDto> =
         orderReadRepository
@@ -39,7 +53,7 @@ class OrderReadService(
                     items = result.first.map { order: Order ->
                         FindOrderResultDto.of(
                             order = order,
-                            isEmptyOrderItems = false,
+                            isLazyLoading = true,
                         )
                     },
                     pageNumber = pageNumber,
@@ -49,9 +63,16 @@ class OrderReadService(
             }
 
     fun findOrderWithOrderItem(id: Long): FindOrderResultDto {
+        logger.info(
+            "[ IN ] ---> findOrderWithOrderItem(), isReadOnly: {}",
+            TransactionSynchronizationManager.isCurrentTransactionReadOnly(),
+        )
+
         val order: Order = orderReadRepository.findByIdWithOrderItem(id = id)
             ?: throw NoSuchElementException(ExceptionMessage.ORDER_NOT_FOUND)
 
-        return order.let { FindOrderResultDto.of(order = it) }
+        logger.info("[ OUT ] <--- findOrderWithOrderItem()")
+
+        return order.let { FindOrderResultDto.of(order = it, isLazyLoading = true) }
     }
 }

@@ -12,18 +12,18 @@ data class FindOrderResultDto(
     val orderItems: List<FindOrderItemResultDto>,
 ) {
     companion object {
-        fun of(order: Order, isEmptyOrderItems: Boolean = true) = FindOrderResultDto(
+        fun of(order: Order, isLazyLoading: Boolean = false) = FindOrderResultDto(
             orderId = order.id,
             memberId = order.memberId,
             statusLabel = order.status.label,
             orderedAt = order.orderedAt,
             orderItems = getFindOrderItemRessultDtos(
                 orderItems = order.orderItems,
-                isEmptyOrderItems = isEmptyOrderItems,
+                isLazyLoading = isLazyLoading,
             ),
         )
 
-        private fun getFindOrderItemRessultDtos(orderItems: List<OrderItem>, isEmptyOrderItems: Boolean) =
-            if (isEmptyOrderItems) listOf() else orderItems.map { FindOrderItemResultDto.of(orderItem = it) }
+        private fun getFindOrderItemRessultDtos(orderItems: List<OrderItem>, isLazyLoading: Boolean) =
+            if (isLazyLoading) orderItems.map { FindOrderItemResultDto.of(orderItem = it) } else listOf()
     }
 }
