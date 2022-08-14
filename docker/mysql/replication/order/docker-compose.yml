@@ -1,0 +1,41 @@
+version: '3.3'
+
+services:
+  order-write-mysql:
+    image: order-write-mysql
+    container_name: order-write-mysql
+    volumes:
+      - ./write/mysql-init-files/:/docker-entrypoint-initdb.d/
+      - ./write/mysql-config-files/:/etc/mysql/conf.d
+    restart: always
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD="true"
+    ports:
+      - '9030:3306'
+    networks:
+      order_mysql_net:
+        ipv4_address: 172.16.0.10
+
+  order-read-mysql:
+    image: order-read-mysql
+    container_name: order-read-mysql
+    volumes:
+      - ./read/mysql-init-files/:/docker-entrypoint-initdb.d/
+      - ./read/mysql-config-files/:/etc/mysql/conf.d
+    restart: always
+    environment:
+      - MYSQL_ALLOW_EMPTY_PASSWORD="true"
+    ports:
+      - '9031:3306'
+    networks:
+      order_mysql_net:
+        ipv4_address: 172.16.0.11
+    depends_on:
+      - 'order-write-mysql'
+
+networks:
+  order_mysql_net:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.16.0.0/16
