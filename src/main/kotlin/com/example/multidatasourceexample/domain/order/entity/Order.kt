@@ -73,7 +73,7 @@ class Order private constructor(
         orderItem.changeOrder(order = this)
     }
 
-    fun changeStatus(value: String) {
+    fun changeStatus(status: OrderStatus) {
         if (this.status.isCanceled()) {
             throw IllegalStateException(ExceptionMessage.ORDER_STATUS_IS_CANCEL)
         }
@@ -82,7 +82,7 @@ class Order private constructor(
             throw IllegalStateException(ExceptionMessage.ORDER_STATUS_IS_FAIL)
         }
 
-        this.status = OrderStatus.convert(value = value)
+        this.status = status
         this.updatedAt = LocalDateTime.now()
     }
 

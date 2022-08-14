@@ -7,15 +7,21 @@ import com.example.multidatasourceexample.service.dto.CreateOrderItemsDto
 import com.example.multidatasourceexample.service.order.OrderService
 import io.kotest.core.spec.style.DescribeSpec
 import io.mockk.every
+import io.mockk.justRun
 import io.mockk.mockk
 import io.mockk.verify
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
+import org.springframework.context.ApplicationEventPublisher
 
 internal class OrderServiceTests : DescribeSpec(
     {
         val mockOrderRepository = mockk<OrderRepository>()
-        val orderService = OrderService(orderRepository = mockOrderRepository)
+        val mockApplicationEventPublisher = mockk<ApplicationEventPublisher>(relaxed = true)
+        val orderService = OrderService(
+            orderRepository = mockOrderRepository,
+            applicationEventPublisher = mockApplicationEventPublisher,
+        )
 
         describe("createOrder 메서드는") {
             // given
@@ -38,6 +44,7 @@ internal class OrderServiceTests : DescribeSpec(
             )
 
             every { mockOrderRepository.save(any()) } answers { firstArg() }
+            justRun { mockApplicationEventPublisher.publishEvent(any()) }
 
             // when
             withContext(Dispatchers.IO) { orderService.createOrder(dto = dto) }

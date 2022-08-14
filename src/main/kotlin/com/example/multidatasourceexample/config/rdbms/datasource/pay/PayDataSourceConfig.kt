@@ -10,7 +10,7 @@ import javax.sql.DataSource
 
 @Configuration
 @EnableConfigurationProperties(value = [PayBasicProperty::class])
-@Profile(value = ["test", "dev"])
+@Profile(value = ["test", "dev", "prod"])
 class PayDataSourceConfig(
     private val payBasicProperty: PayBasicProperty,
 ) {

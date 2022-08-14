@@ -62,7 +62,7 @@ class Pay private constructor(
         this.id = id
     }
 
-    fun changeStatus(value: String) {
+    fun changeStatus(status: PayStatus) {
         if (this.status.isCanceled()) {
             throw IllegalStateException(ExceptionMessage.PAY_STATUS_IS_CANCEL)
         }
@@ -71,7 +71,7 @@ class Pay private constructor(
             throw IllegalStateException(ExceptionMessage.PAY_STATUS_IS_FAIL)
         }
 
-        this.status = PayStatus.convert(value = value)
+        this.status = status
         this.updatedAt = LocalDateTime.now()
     }
 
