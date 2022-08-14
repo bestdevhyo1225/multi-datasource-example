@@ -2,6 +2,7 @@ package com.example.multidatasourceexample.domain.order.repository
 
 import com.example.multidatasourceexample.domain.AbstractReadRepositoryImpl
 import com.example.multidatasourceexample.domain.order.entity.Order
+import com.example.multidatasourceexample.domain.order.entity.OrderStatus
 import com.example.multidatasourceexample.domain.order.entity.QOrder.order
 import com.example.multidatasourceexample.domain.order.entity.QOrderItem.orderItem
 import com.querydsl.core.types.dsl.BooleanExpression
@@ -38,6 +39,27 @@ class OrderReadRepositoryImpl(
         Pair(first = orders.await(), second = orderCounts.await())
     }
 
+    override fun findAllByStatusAndLimitAndOffset(
+        status: OrderStatus,
+        limit: Int,
+        offset: Int,
+    ): Pair<List<Order>, Long> = runBlocking {
+        val orders: Deferred<List<Order>> = async(context = Dispatchers.IO) {
+            orderJpaQueryFactory
+                .selectFrom(order)
+                .where(orderStatusEq(status = status))
+                .limit(getLimit(limit = limit))
+                .offset(getOffset(offset = offset))
+                .fetch()
+        }
+
+        val orderCounts: Deferred<Long> = async(context = Dispatchers.IO) {
+            orderRepository.countOrdersByStatus(status = status)
+        }
+
+        Pair(first = orders.await(), second = orderCounts.await())
+    }
+
     override fun findById(id: Long): Order? =
         orderJpaQueryFactory
             .selectFrom(order)
@@ -52,4 +74,5 @@ class OrderReadRepositoryImpl(
             .fetchOne()
 
     private fun orderIdEq(id: Long): BooleanExpression = order.id.eq(id)
+    private fun orderStatusEq(status: OrderStatus): BooleanExpression = order.status.eq(status)
 }
