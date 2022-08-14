@@ -12,7 +12,7 @@ class OrderJpaQueryFactoryConfig {
     @PersistenceContext(unitName = "orderEntityManager")
     private lateinit var orderEntityManager: EntityManager
 
-    @Bean(name = ["orderJpaQueryFactory"])
+    @Bean
     fun orderJpaQueryFactory(): JPAQueryFactory {
         return JPAQueryFactory(orderEntityManager)
     }
