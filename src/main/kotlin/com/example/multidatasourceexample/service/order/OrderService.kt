@@ -8,6 +8,7 @@ import com.example.multidatasourceexample.service.dto.CreateOrderResultDto
 import org.slf4j.LoggerFactory
 import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionSynchronizationManager
 
 @Service
 @Transactional(transactionManager = "orderTransactionManager")
@@ -18,7 +19,10 @@ class OrderService(
     private val logger = LoggerFactory.getLogger(this::class.java)
 
     fun createOrder(dto: CreateOrderDto): CreateOrderResultDto {
-        logger.info("[ IN ] ---> createOrder()")
+        logger.info(
+            "[ IN ] ---> createOrder(), isReadOnly: {}",
+            TransactionSynchronizationManager.isCurrentTransactionReadOnly(),
+        )
 
         val order: Order = Order.create(
             memberId = dto.memberId,
