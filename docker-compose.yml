@@ -1,0 +1,26 @@
+version: '3'
+
+services:
+  order-mysql:
+    image: mysql:5.7
+    container_name: order-mysql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql-mode=''
+    restart: always
+    ports:
+      - '9700:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: order
+      TZ: Asia/Seoul
+
+  pay-mysql:
+    image: mysql:5.7
+    container_name: pay-mysql
+    command: --default-authentication-plugin=mysql_native_password --character-set-server=utf8mb4 --collation-server=utf8mb4_unicode_ci --sql-mode=''
+    restart: always
+    ports:
+      - '9800:3306'
+    environment:
+      MYSQL_ROOT_PASSWORD: example
+      MYSQL_DATABASE: pay
+      TZ: Asia/Seoul

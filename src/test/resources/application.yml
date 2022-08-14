@@ -1,26 +1,19 @@
-server:
-  port: 9090
-  tomcat:
-    threads:
-      min-spare: 20
-      max: 100
-
 spring:
   profiles:
-    active: dev
+    active: test
 
   datasource:
     hikari:
       order:
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        jdbc-url: jdbc:mysql://root:example@localhost:9700/order?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+        driver-class-name: org.h2.Driver
+        jdbc-url: jdbc:h2:mem:order-db-test
         minimum-idle: 15
         maximum-pool-size: 15
         max-lifetime: 18000000 # 5 hour
         connection-timeout: 5000 # 5 second
       pay:
-        driver-class-name: com.mysql.cj.jdbc.Driver
-        jdbc-url: jdbc:mysql://root:example@localhost:9800/pay?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+        driver-class-name: org.h2.Driver
+        jdbc-url: jdbc:h2:mem:pay-db-test
         minimum-idle: 15
         maximum-pool-size: 15
         max-lifetime: 18000000 # 5 hour

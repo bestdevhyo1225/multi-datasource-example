@@ -1,0 +1,27 @@
+### POST Order 생성
+POST localhost:9090/orders
+Content-Type: application/json
+
+{
+  "memberId": 18271,
+  "orderItems": [
+    {
+      "category": "book",
+      "itemName": "Spring Guide 2.0",
+      "purchasePrice": "27000.0000"
+    },
+    {
+      "category": "book",
+      "itemName": "Hibernate Core Principle",
+      "purchasePrice": "32000.0000"
+    }
+  ]
+}
+
+### GET Order 리스트 조회
+GET localhost:9090/orders?pageNumber=1&pageSize=10
+Content-Type: application/json
+
+### GET Order 조회
+GET localhost:9090/orders/1
+Content-Type: application/json
