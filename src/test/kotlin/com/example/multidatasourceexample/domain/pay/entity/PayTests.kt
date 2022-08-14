@@ -13,7 +13,7 @@ internal class PayTests : DescribeSpec(
                 val pay = Pay.create(id = 1L, orderId = 1L)
 
                 // when
-                pay.changeStatus(value = "cancel")
+                pay.changeStatus(status = PayStatus.CANCEL)
 
                 // then
                 pay.status.shouldBe(PayStatus.CANCEL)
@@ -23,10 +23,10 @@ internal class PayTests : DescribeSpec(
                 it("결제 상태를 변경할 수 없으며, IllegalStateException 예외를 던진다.") {
                     // given
                     val pay = Pay.create(id = 1L, orderId = 1L)
-                    pay.changeStatus(value = "cancel")
+                    pay.changeStatus(status = PayStatus.CANCEL)
 
                     // when
-                    val exception = shouldThrow<IllegalStateException> { pay.changeStatus(value = "complete") }
+                    val exception = shouldThrow<IllegalStateException> { pay.changeStatus(status = PayStatus.COMPLETE) }
 
                     // then
                     exception.localizedMessage.shouldBe(ExceptionMessage.PAY_STATUS_IS_CANCEL)
@@ -37,10 +37,10 @@ internal class PayTests : DescribeSpec(
                 it("결제 상태를 변경할 수 없으며, IllegalStateException 예외를 던진다.") {
                     // given
                     val pay = Pay.create(id = 1L, orderId = 1L)
-                    pay.changeStatus(value = "fail")
+                    pay.changeStatus(status = PayStatus.FAIL)
 
                     // when
-                    val exception = shouldThrow<IllegalStateException> { pay.changeStatus(value = "complete") }
+                    val exception = shouldThrow<IllegalStateException> { pay.changeStatus(status = PayStatus.COMPLETE) }
 
                     // then
                     exception.localizedMessage.shouldBe(ExceptionMessage.PAY_STATUS_IS_FAIL)

@@ -55,7 +55,7 @@ internal class OrderTests : DescribeSpec(
                 val order = Order.create(memberId = memberId, orderItems = orderItems)
 
                 // when
-                order.changeStatus(value = "complete")
+                order.changeStatus(status = OrderStatus.COMPLETE)
 
                 // then
                 order.status.shouldBe(OrderStatus.COMPLETE)
@@ -70,10 +70,11 @@ internal class OrderTests : DescribeSpec(
                         OrderItem.create(category = "book", itemName = "JPA", purchasePrice = 43_000f),
                     )
                     val order = Order.create(memberId = memberId, orderItems = orderItems)
-                    order.changeStatus(value = "cancel")
+                    order.changeStatus(status = OrderStatus.CANCEL)
 
                     // when
-                    val exception = shouldThrow<IllegalStateException> { order.changeStatus(value = "complete") }
+                    val exception =
+                        shouldThrow<IllegalStateException> { order.changeStatus(status = OrderStatus.COMPLETE) }
 
                     // then
                     exception.localizedMessage.shouldBe(ExceptionMessage.ORDER_STATUS_IS_CANCEL)
@@ -89,10 +90,11 @@ internal class OrderTests : DescribeSpec(
                         OrderItem.create(category = "book", itemName = "JPA", purchasePrice = 43_000f),
                     )
                     val order = Order.create(memberId = memberId, orderItems = orderItems)
-                    order.changeStatus(value = "fail")
+                    order.changeStatus(status = OrderStatus.FAIL)
 
                     // when
-                    val exception = shouldThrow<IllegalStateException> { order.changeStatus(value = "complete") }
+                    val exception =
+                        shouldThrow<IllegalStateException> { order.changeStatus(status = OrderStatus.COMPLETE) }
 
                     // then
                     exception.localizedMessage.shouldBe(ExceptionMessage.ORDER_STATUS_IS_FAIL)
