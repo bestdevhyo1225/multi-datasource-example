@@ -2,6 +2,7 @@ package com.example.multidatasourceexample.service
 
 import com.example.multidatasourceexample.domain.order.entity.Order
 import com.example.multidatasourceexample.domain.order.entity.OrderItem
+import com.example.multidatasourceexample.domain.order.entity.OrderStatus
 import com.example.multidatasourceexample.domain.order.repository.OrderReadRepository
 import com.example.multidatasourceexample.service.dto.FindOrderResultDto
 import com.example.multidatasourceexample.service.order.OrderReadService
@@ -52,6 +53,51 @@ internal class OrderReadServiceTests : DescribeSpec(
 
                 // then
                 verify { mockOrderReadRepository.findAllByLimitAndOffset(limit = pageSize, offset = offset) }
+            }
+        }
+
+        describe("findOrdersByStatus 메서드는") {
+            it("Order 상태별 엔티티 리스트 결과를 Dto 리스트로 변환해서 반환한다.") {
+                // given
+                val status = "wait"
+                val pageNumber = 1
+                val pageSize = 3
+                val offset = pageNumber.minus(1)
+                val total = 3L
+                val orderPair by lazy {
+                    Pair(
+                        first = (1L..3L).map {
+                            val orderItems = listOf(
+                                OrderItem.create(category = "book", itemName = "Spring", purchasePrice = 55_000f),
+                                OrderItem.create(category = "book", itemName = "JPA", purchasePrice = 43_000f),
+                            )
+                            Order.create(memberId = it, orderItems = orderItems)
+                        },
+                        second = total,
+                    )
+                }
+
+                every {
+                    mockOrderReadRepository.findAllByStatusAndLimitAndOffset(
+                        status = OrderStatus.convert(value = status),
+                        limit = pageSize,
+                        offset = offset,
+                    )
+                } returns orderPair
+
+                // when
+                withContext(Dispatchers.IO) {
+                    orderReadService.findOrdersByStatus(status = status, pageNumber = pageNumber, pageSize = pageSize)
+                }
+
+                // then
+                verify {
+                    mockOrderReadRepository.findAllByStatusAndLimitAndOffset(
+                        status = OrderStatus.convert(value = status),
+                        limit = pageSize,
+                        offset = offset,
+                    )
+                }
             }
         }
 
