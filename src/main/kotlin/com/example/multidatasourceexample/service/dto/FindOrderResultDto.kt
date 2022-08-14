@@ -1,14 +1,14 @@
 package com.example.multidatasourceexample.service.dto
 
+import com.example.multidatasourceexample.common.utils.DateTimeFormatterUtils
 import com.example.multidatasourceexample.domain.order.entity.Order
 import com.example.multidatasourceexample.domain.order.entity.OrderItem
-import java.time.LocalDateTime
 
 data class FindOrderResultDto(
     val orderId: Long,
     val memberId: Long,
     val statusLabel: String,
-    val orderedAt: LocalDateTime,
+    val orderedAt: String,
     val orderItems: List<FindOrderItemResultDto>,
 ) {
     companion object {
@@ -16,7 +16,7 @@ data class FindOrderResultDto(
             orderId = order.id,
             memberId = order.memberId,
             statusLabel = order.status.label,
-            orderedAt = order.orderedAt,
+            orderedAt = DateTimeFormatterUtils.toStringDateTime(localDateTime = order.orderedAt),
             orderItems = getFindOrderItemRessultDtos(
                 orderItems = order.orderItems,
                 isLazyLoading = isLazyLoading,
