@@ -25,7 +25,7 @@ class OrderReadService(
             TransactionSynchronizationManager.isCurrentTransactionReadOnly(),
         )
 
-        val findOrderResultDto = orderReadRepository
+        val findOrderResultDto: FindListResultDto<FindOrderResultDto> = orderReadRepository
             .findAllByLimitAndOffset(limit = pageSize, offset = pageNumber.minus(1).times(pageSize))
             .let { result: Pair<List<Order>, Long> ->
                 FindListResultDto(
@@ -41,8 +41,13 @@ class OrderReadService(
         return findOrderResultDto
     }
 
-    fun findOrdersByStatus(status: String, pageNumber: Int, pageSize: Int): FindListResultDto<FindOrderResultDto> =
-        orderReadRepository
+    fun findOrdersByStatus(status: String, pageNumber: Int, pageSize: Int): FindListResultDto<FindOrderResultDto> {
+        logger.info(
+            "[ IN ] ---> findOrdersByStatus(), isReadOnly: {}",
+            TransactionSynchronizationManager.isCurrentTransactionReadOnly(),
+        )
+
+        val findOrderResultDto: FindListResultDto<FindOrderResultDto> = orderReadRepository
             .findAllByStatusAndLimitAndOffset(
                 status = OrderStatus.convert(value = status),
                 limit = pageSize,
@@ -61,6 +66,11 @@ class OrderReadService(
                     total = result.second,
                 )
             }
+
+        logger.info("[ OUT ] <--- findOrdersByStatus()")
+
+        return findOrderResultDto
+    }
 
     fun findOrderWithOrderItem(id: Long): FindOrderResultDto {
         logger.info(

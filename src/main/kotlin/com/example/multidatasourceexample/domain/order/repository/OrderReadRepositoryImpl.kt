@@ -7,9 +7,11 @@ import com.example.multidatasourceexample.domain.order.entity.QOrder.order
 import com.example.multidatasourceexample.domain.order.entity.QOrderItem.orderItem
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
+import org.slf4j.LoggerFactory
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
+import org.springframework.transaction.support.TransactionSynchronizationManager
 
 @Repository
 @Transactional(transactionManager = "orderTransactionManager", readOnly = true)
@@ -19,8 +21,15 @@ class OrderReadRepositoryImpl(
     private val orderRepository: OrderRepository,
 ) : AbstractReadRepositoryImpl(), OrderReadRepository {
 
-    override fun findAllByLimitAndOffset(limit: Int, offset: Int): Pair<List<Order>, Long> =
-        Pair(
+    private val logger = LoggerFactory.getLogger(this::class.java)
+
+    override fun findAllByLimitAndOffset(limit: Int, offset: Int): Pair<List<Order>, Long> {
+        logger.info(
+            "[ IN ] ---> findAllByLimitAndOffset(), isReadOnly: {}",
+            TransactionSynchronizationManager.isCurrentTransactionReadOnly(),
+        )
+
+        val result = Pair(
             first = orderJpaQueryFactory
                 .selectFrom(order)
                 .limit(getLimit(limit = limit))
@@ -29,19 +38,35 @@ class OrderReadRepositoryImpl(
             second = orderRepository.countOrders(),
         )
 
+        logger.info("[ OUT ] <--- findAllByLimitAndOffset()")
+
+        return result
+    }
+
     override fun findAllByStatusAndLimitAndOffset(
         status: OrderStatus,
         limit: Int,
         offset: Int,
-    ): Pair<List<Order>, Long> = Pair(
-        first = orderJpaQueryFactory
-            .selectFrom(order)
-            .where(orderStatusEq(status = status))
-            .limit(getLimit(limit = limit))
-            .offset(getOffset(offset = offset))
-            .fetch(),
-        second = orderRepository.countOrdersByStatus(status = status),
-    )
+    ): Pair<List<Order>, Long> {
+        logger.info(
+            "[ IN ] ---> findAllByStatusAndLimitAndOffset(), isReadOnly: {}",
+            TransactionSynchronizationManager.isCurrentTransactionReadOnly(),
+        )
+
+        val result = Pair(
+            first = orderJpaQueryFactory
+                .selectFrom(order)
+                .where(orderStatusEq(status = status))
+                .limit(getLimit(limit = limit))
+                .offset(getOffset(offset = offset))
+                .fetch(),
+            second = orderRepository.countOrdersByStatus(status = status),
+        )
+
+        logger.info("[ OUT ] <--- findAllByStatusAndLimitAndOffset()")
+
+        return result
+    }
 
     override fun findById(id: Long): Order? =
         orderJpaQueryFactory
