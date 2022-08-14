@@ -1,6 +1,6 @@
 package com.example.multidatasourceexample.service.order
 
-import com.example.multidatasourceexample.config.constants.ExceptionMessage
+import com.example.multidatasourceexample.common.constants.ExceptionMessage
 import com.example.multidatasourceexample.domain.order.entity.Order
 import com.example.multidatasourceexample.domain.order.entity.OrderStatus
 import com.example.multidatasourceexample.domain.order.repository.OrderReadRepository

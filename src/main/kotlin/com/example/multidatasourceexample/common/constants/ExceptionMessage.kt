@@ -1,4 +1,4 @@
-package com.example.multidatasourceexample.config.constants
+package com.example.multidatasourceexample.common.constants
 
 object ExceptionMessage {
     const val ORDER_STATUS_IS_CANCEL = "주문 취소 상태에서는 다른 상태로 변경할 수 없습니다."

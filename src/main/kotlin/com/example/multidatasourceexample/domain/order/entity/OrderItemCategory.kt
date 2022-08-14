@@ -1,6 +1,6 @@
 package com.example.multidatasourceexample.domain.order.entity
 
-import com.example.multidatasourceexample.config.constants.ExceptionMessage
+import com.example.multidatasourceexample.common.constants.ExceptionMessage
 
 enum class OrderItemCategory(val label: String) {
     BOOK("책");

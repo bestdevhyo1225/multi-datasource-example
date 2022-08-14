@@ -1,6 +1,6 @@
 package com.example.multidatasourceexample.domain.order.entity
 
-import com.example.multidatasourceexample.config.constants.ExceptionMessage
+import com.example.multidatasourceexample.common.constants.ExceptionMessage
 
 enum class OrderStatus(val label: String) : OrderCancelable, OrderFailable {
     WAIT("주문 대기") {
