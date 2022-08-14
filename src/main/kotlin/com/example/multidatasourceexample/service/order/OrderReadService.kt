@@ -18,7 +18,14 @@ class OrderReadService(
     fun findOrders(pageNumber: Int, pageSize: Int): FindListResultDto<FindOrderResultDto> =
         orderReadRepository
             .findAllByLimitAndOffset(limit = pageSize, offset = pageNumber.minus(1).times(pageSize))
-            .let { result: Pair<List<Order>, Long> -> getFindListResultDto(result, pageNumber, pageSize) }
+            .let { result: Pair<List<Order>, Long> ->
+                FindListResultDto(
+                    items = result.first.map { order: Order -> FindOrderResultDto.of(order = order) },
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    total = result.second,
+                )
+            }
 
     fun findOrdersByStatus(status: String, pageNumber: Int, pageSize: Int): FindListResultDto<FindOrderResultDto> =
         orderReadRepository
@@ -27,7 +34,19 @@ class OrderReadService(
                 limit = pageSize,
                 offset = pageNumber.minus(1).times(pageSize),
             )
-            .let { result: Pair<List<Order>, Long> -> getFindListResultDto(result, pageNumber, pageSize) }
+            .let { result: Pair<List<Order>, Long> ->
+                FindListResultDto(
+                    items = result.first.map { order: Order ->
+                        FindOrderResultDto.of(
+                            order = order,
+                            isEmptyOrderItems = false,
+                        )
+                    },
+                    pageNumber = pageNumber,
+                    pageSize = pageSize,
+                    total = result.second,
+                )
+            }
 
     fun findOrderWithOrderItem(id: Long): FindOrderResultDto {
         val order: Order = orderReadRepository.findByIdWithOrderItem(id = id)
@@ -35,12 +54,4 @@ class OrderReadService(
 
         return order.let { FindOrderResultDto.of(order = it) }
     }
-
-    private fun getFindListResultDto(result: Pair<List<Order>, Long>, pageNumber: Int, pageSize: Int) =
-        FindListResultDto(
-            items = result.first.map { order: Order -> FindOrderResultDto.of(order = order, isEmptyOrderItems = true) },
-            pageNumber = pageNumber,
-            pageSize = pageSize,
-            total = result.second,
-        )
 }

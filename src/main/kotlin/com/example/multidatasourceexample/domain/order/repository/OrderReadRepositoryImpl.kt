@@ -7,10 +7,6 @@ import com.example.multidatasourceexample.domain.order.entity.QOrder.order
 import com.example.multidatasourceexample.domain.order.entity.QOrderItem.orderItem
 import com.querydsl.core.types.dsl.BooleanExpression
 import com.querydsl.jpa.impl.JPAQueryFactory
-import kotlinx.coroutines.Deferred
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.async
-import kotlinx.coroutines.runBlocking
 import org.springframework.beans.factory.annotation.Qualifier
 import org.springframework.stereotype.Repository
 import org.springframework.transaction.annotation.Transactional
@@ -23,42 +19,29 @@ class OrderReadRepositoryImpl(
     private val orderRepository: OrderRepository,
 ) : AbstractReadRepositoryImpl(), OrderReadRepository {
 
-    override fun findAllByLimitAndOffset(limit: Int, offset: Int): Pair<List<Order>, Long> = runBlocking {
-        val orders: Deferred<List<Order>> = async(context = Dispatchers.IO) {
-            orderJpaQueryFactory
+    override fun findAllByLimitAndOffset(limit: Int, offset: Int): Pair<List<Order>, Long> =
+        Pair(
+            first = orderJpaQueryFactory
                 .selectFrom(order)
                 .limit(getLimit(limit = limit))
                 .offset(getOffset(offset = offset))
-                .fetch()
-        }
-
-        val orderCounts: Deferred<Long> = async(context = Dispatchers.IO) {
-            orderRepository.countOrders()
-        }
-
-        Pair(first = orders.await(), second = orderCounts.await())
-    }
+                .fetch(),
+            second = orderRepository.countOrders(),
+        )
 
     override fun findAllByStatusAndLimitAndOffset(
         status: OrderStatus,
         limit: Int,
         offset: Int,
-    ): Pair<List<Order>, Long> = runBlocking {
-        val orders: Deferred<List<Order>> = async(context = Dispatchers.IO) {
-            orderJpaQueryFactory
-                .selectFrom(order)
-                .where(orderStatusEq(status = status))
-                .limit(getLimit(limit = limit))
-                .offset(getOffset(offset = offset))
-                .fetch()
-        }
-
-        val orderCounts: Deferred<Long> = async(context = Dispatchers.IO) {
-            orderRepository.countOrdersByStatus(status = status)
-        }
-
-        Pair(first = orders.await(), second = orderCounts.await())
-    }
+    ): Pair<List<Order>, Long> = Pair(
+        first = orderJpaQueryFactory
+            .selectFrom(order)
+            .where(orderStatusEq(status = status))
+            .limit(getLimit(limit = limit))
+            .offset(getOffset(offset = offset))
+            .fetch(),
+        second = orderRepository.countOrdersByStatus(status = status),
+    )
 
     override fun findById(id: Long): Order? =
         orderJpaQueryFactory
