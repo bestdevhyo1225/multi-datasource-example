@@ -42,3 +42,51 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.springframework.orm.jpa: debug
+
+---
+spring:
+  config:
+    activate:
+      on-profile: prod
+
+  datasource:
+    hikari:
+      order:
+        write:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          jdbc-url: jdbc:mysql://masteruser:masterpassword@localhost:9030/order?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+          minimum-idle: 10
+          maximum-pool-size: 10
+          max-lifetime: 18000000 # 5 hour
+          connection-timeout: 5000 # 5 second
+        read:
+          driver-class-name: com.mysql.cj.jdbc.Driver
+          jdbc-url: jdbc:mysql://slaveuser:slavepassword@localhost:9031/order?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+          minimum-idle: 20
+          maximum-pool-size: 20
+          max-lifetime: 18000000 # 5 hour
+          connection-timeout: 5000 # 5 second
+      pay:
+        driver-class-name: com.mysql.cj.jdbc.Driver
+        jdbc-url: jdbc:mysql://root:example@localhost:9800/pay?useSSL=false&characterEncoding=UTF-8&serverTimezone=Asia/Seoul
+        minimum-idle: 15
+        maximum-pool-size: 15
+        max-lifetime: 18000000 # 5 hour
+        connection-timeout: 5000 # 5 second
+
+  jpa:
+    properties:
+      hibernate:
+        hbm2ddl:
+          auto: update
+        default_batch_fetch_size: 1000
+        query:
+          plan_cache_max_size: 1024 # 쿼리 계획 캐시의 최대 갯수 (Default 값은 2048)
+          plan_parameter_metadata_max_size: 64 # Native Query ParameterMetadata 최대 갯수 (Default 값은 128)
+          in_clause_parameter_padding: true # Where In절 Padding Cache 사용
+    open-in-view: false
+
+logging:
+  level:
+    org.hibernate.SQL: debug
+    org.springframework.orm.jpa: debug
