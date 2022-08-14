@@ -2,10 +2,12 @@ package com.example.multidatasourceexample.domain.order.repository
 
 import com.example.multidatasourceexample.domain.order.entity.Order
 import com.example.multidatasourceexample.domain.order.entity.OrderItem
+import com.example.multidatasourceexample.domain.order.entity.OrderStatus
 import io.kotest.core.extensions.Extension
 import io.kotest.core.spec.IsolationMode
 import io.kotest.core.spec.style.DescribeSpec
 import io.kotest.extensions.spring.SpringExtension
+import io.kotest.matchers.collections.shouldHaveSize
 import io.kotest.matchers.collections.shouldNotBeEmpty
 import io.kotest.matchers.shouldBe
 import kotlinx.coroutines.Dispatchers
@@ -57,6 +59,26 @@ internal class OrderReadRepositoryTests : OrderBaseRepositoryTestable, DescribeS
 
                 // then
                 result.first.shouldNotBeEmpty()
+                result.second.shouldBe(savedOrders.size)
+            }
+        }
+
+        this.describe("findAllByStatusAndLimitAndOffset 메서드는") {
+            it("주문 상태별로 주문 리스트를 조회한다.") {
+                // given
+                val status = OrderStatus.WAIT
+                val limit = 10
+                val offset = 0
+
+                // when
+                val result = orderReadRepository.findAllByStatusAndLimitAndOffset(
+                    status = status,
+                    limit = limit,
+                    offset = offset,
+                )
+
+                // then
+                result.first.shouldHaveSize(savedOrders.size)
                 result.second.shouldBe(savedOrders.size)
             }
         }

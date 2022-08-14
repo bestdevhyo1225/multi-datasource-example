@@ -1,4 +1,4 @@
-### POST Order 생성
+### POST 주문 생성
 POST localhost:9090/orders
 Content-Type: application/json
 
@@ -18,8 +18,24 @@ Content-Type: application/json
   ]
 }
 
-### GET Order 리스트 조회
+### GET 주문 리스트 조회
 GET localhost:9090/orders?pageNumber=1&pageSize=10
+Content-Type: application/json
+
+### GET 주문 대기 리스트 조회
+GET localhost:9090/orders/wait/status?pageNumber=1&pageSize=10
+Content-Type: application/json
+
+### GET 주문 완료 리스트 조회
+GET localhost:9090/orders/complete/status?pageNumber=1&pageSize=10
+Content-Type: application/json
+
+### GET 주문 취소 리스트 조회
+GET localhost:9090/orders/cancel/status?pageNumber=1&pageSize=10
+Content-Type: application/json
+
+### GET 주문 실패 리스트 조회
+GET localhost:9090/orders/fail/status?pageNumber=1&pageSize=10
 Content-Type: application/json
 
 ### GET Order 조회
