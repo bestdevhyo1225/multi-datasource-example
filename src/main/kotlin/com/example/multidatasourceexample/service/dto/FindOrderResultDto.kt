@@ -12,7 +12,7 @@ data class FindOrderResultDto(
     val orderItems: List<FindOrderItemResultDto>,
 ) {
     companion object {
-        fun of(order: Order, isEmptyOrderItems: Boolean = false) = FindOrderResultDto(
+        fun of(order: Order, isEmptyOrderItems: Boolean = true) = FindOrderResultDto(
             orderId = order.id,
             memberId = order.memberId,
             statusLabel = order.status.label,
