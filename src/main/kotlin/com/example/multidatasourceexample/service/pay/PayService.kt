@@ -4,6 +4,7 @@ import com.example.multidatasourceexample.common.constants.ExceptionMessage
 import com.example.multidatasourceexample.domain.pay.entity.Pay
 import com.example.multidatasourceexample.domain.pay.entity.PayStatus
 import com.example.multidatasourceexample.domain.pay.repository.PayRepository
+import com.example.multidatasourceexample.service.dto.event.CreateFailedPayEventDto
 import com.example.multidatasourceexample.service.dto.event.CreatedPayEventDto
 import com.example.multidatasourceexample.service.dto.event.FailurePaymentEventDto
 import com.example.multidatasourceexample.service.dto.event.SuccessPaymentEventDto
@@ -23,7 +24,8 @@ class PayService(
 ) {
 
     fun createPay(orderId: Long) {
-        executeOrderFailProcessOnRollback(orderId = orderId)
+//        executeOrderFailProcessOnRollback(orderId = orderId)
+        applicationEventPublisher.publishEvent(CreateFailedPayEventDto(orderId = orderId))
 
         val pay: Pay = payRepository.save(Pay.create(orderId = orderId))
 
