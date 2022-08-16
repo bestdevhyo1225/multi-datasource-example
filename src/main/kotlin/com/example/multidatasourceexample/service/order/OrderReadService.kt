@@ -29,7 +29,7 @@ class OrderReadService(
             .findAllByLimitAndOffset(limit = pageSize, offset = pageNumber.minus(1).times(pageSize))
             .let { result: Pair<List<Order>, Long> ->
                 FindListResultDto(
-                    items = result.first.map { order: Order -> FindOrderResultDto.of(order = order) },
+                    items = result.first.map { order: Order -> FindOrderResultDto(order = order) },
                     pageNumber = pageNumber,
                     pageSize = pageSize,
                     total = result.second,
@@ -56,7 +56,7 @@ class OrderReadService(
             .let { result: Pair<List<Order>, Long> ->
                 FindListResultDto(
                     items = result.first.map { order: Order ->
-                        FindOrderResultDto.of(
+                        FindOrderResultDto(
                             order = order,
                             isLazyLoading = true,
                         )
@@ -83,6 +83,6 @@ class OrderReadService(
 
         logger.info("[ OUT ] <--- findOrderWithOrderItem()")
 
-        return order.let { FindOrderResultDto.of(order = it, isLazyLoading = true) }
+        return FindOrderResultDto(order = order, isLazyLoading = true)
     }
 }
