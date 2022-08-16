@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionSynchronization
 import org.springframework.transaction.support.TransactionSynchronizationManager
+import java.io.IOException
 
 @Service
 @Transactional(transactionManager = "payTransactionManager")
@@ -39,7 +40,7 @@ class PayService(
             val pay: Pay = findPay(id = id)
             pay.changeStatus(status = PayStatus.FAIL)
             applicationEventPublisher.publishEvent(FailurePaymentEventDto(orderId = orderId))
-            throw RuntimeException(ExceptionMessage.PAYMENT_REQUEST_FAILURE)
+            throw IOException(ExceptionMessage.PAYMENT_REQUEST_FAILURE)
         }
 
         val pay: Pay = findPay(id = id)
