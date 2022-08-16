@@ -113,7 +113,7 @@ internal class OrderReadServiceTests : DescribeSpec(
                     )
                     Order.create(memberId = memberId, orderItems = orderItems)
                 }
-                val excpectFindOrderResultdto by lazy { FindOrderResultDto.of(order = order, isLazyLoading = true) }
+                val excpectFindOrderResultdto by lazy { FindOrderResultDto(order = order, isLazyLoading = true) }
 
                 every { mockOrderReadRepository.findByIdWithOrderItem(id = orderId) } returns order
 
