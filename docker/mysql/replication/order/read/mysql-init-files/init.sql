@@ -1,4 +1,4 @@
-CREATE DATABASE `order` character set utf8mb4 collate utf8mb4_general_ci;
+CREATE DATABASE `order` CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci;
 
 CREATE TABLE `order`.temp
 (
