@@ -2,9 +2,6 @@ package com.example.multidatasourceexample.controller.rest
 
 import com.example.multidatasourceexample.controller.rest.request.CreateOrderRequest
 import com.example.multidatasourceexample.controller.rest.response.SuccessResponse
-import com.example.multidatasourceexample.service.dto.CreateOrderDto
-import com.example.multidatasourceexample.service.dto.CreateOrderItemDto
-import com.example.multidatasourceexample.service.dto.CreateOrderItemsDto
 import com.example.multidatasourceexample.service.dto.CreateOrderResultDto
 import com.example.multidatasourceexample.service.order.OrderService
 import org.springframework.http.ResponseEntity
@@ -26,23 +23,7 @@ class OrderController(
 
     @PostMapping
     fun createOrder(@Valid @RequestBody request: CreateOrderRequest): ResponseEntity<SuccessResponse<CreateOrderResultDto>> {
-        val createOrderItemsDto = CreateOrderItemsDto(
-            items = request.orderItems.map {
-                CreateOrderItemDto(
-                    category = it.category,
-                    itemName = it.itemName,
-                    purchasePrice = it.purchasePrice.toFloat(),
-                )
-            },
-        )
-
-        val createOrderResultDto: CreateOrderResultDto = orderService.createOrder(
-            dto = CreateOrderDto(
-                memberId = request.memberId,
-                createOrderItemsDto = createOrderItemsDto,
-            ),
-        )
-
+        val createOrderResultDto: CreateOrderResultDto = orderService.createOrder(dto = request.toServiceDto())
         return created(URI.create("/orders/${createOrderResultDto.orderId}"))
             .body(SuccessResponse(data = createOrderResultDto))
     }
