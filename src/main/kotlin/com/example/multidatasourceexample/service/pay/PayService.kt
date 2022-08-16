@@ -4,6 +4,7 @@ import com.example.multidatasourceexample.common.constants.ExceptionMessage
 import com.example.multidatasourceexample.domain.pay.entity.Pay
 import com.example.multidatasourceexample.domain.pay.entity.PayStatus
 import com.example.multidatasourceexample.domain.pay.repository.PayRepository
+import com.example.multidatasourceexample.service.dto.event.CreatedPayEventDto
 import com.example.multidatasourceexample.service.dto.event.FailurePaymentEventDto
 import com.example.multidatasourceexample.service.dto.event.SuccessPaymentEventDto
 import org.springframework.context.ApplicationEventPublisher
@@ -26,7 +27,7 @@ class PayService(
 
         val pay: Pay = payRepository.save(Pay.create(orderId = orderId))
 
-        processPayment(id = pay.id, orderId = orderId)
+        applicationEventPublisher.publishEvent(CreatedPayEventDto(payId = pay.id, orderId = orderId))
     }
 
     fun processPayment(id: Long, orderId: Long) {
