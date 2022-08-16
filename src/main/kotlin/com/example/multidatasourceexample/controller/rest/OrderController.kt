@@ -22,7 +22,10 @@ class OrderController(
 ) {
 
     @PostMapping
-    fun createOrder(@Valid @RequestBody request: CreateOrderRequest): ResponseEntity<SuccessResponse<CreateOrderResultDto>> {
+    fun createOrder(
+        @Valid @RequestBody
+        request: CreateOrderRequest,
+    ): ResponseEntity<SuccessResponse<CreateOrderResultDto>> {
         val createOrderResultDto: CreateOrderResultDto = orderService.createOrder(dto = request.toServiceDto())
         return created(URI.create("/orders/${createOrderResultDto.orderId}"))
             .body(SuccessResponse(data = createOrderResultDto))

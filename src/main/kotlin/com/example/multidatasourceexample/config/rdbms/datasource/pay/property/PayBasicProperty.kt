@@ -13,5 +13,5 @@ data class PayBasicProperty(
     val minimumIdle: Int,
     val maximumPoolSize: Int,
     val maxLifetime: Long,
-    val connectionTimeout: Long
+    val connectionTimeout: Long,
 )
