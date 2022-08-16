@@ -7,5 +7,5 @@ import org.springframework.boot.runApplication
 class MultiDatasourceExampleApplication
 
 fun main(args: Array<String>) {
-	runApplication<MultiDatasourceExampleApplication>(*args)
+    runApplication<MultiDatasourceExampleApplication>(*args)
 }

@@ -13,5 +13,5 @@ data class OrderBasicProperty(
     val minimumIdle: Int,
     val maximumPoolSize: Int,
     val maxLifetime: Long,
-    val connectionTimeout: Long
+    val connectionTimeout: Long,
 )
