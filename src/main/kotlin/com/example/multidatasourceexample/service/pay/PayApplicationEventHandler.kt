@@ -1,5 +1,6 @@
 package com.example.multidatasourceexample.service.pay
 
+import com.example.multidatasourceexample.service.dto.event.CreateFailedPayEventDto
 import com.example.multidatasourceexample.service.dto.event.CreatedPayEventDto
 import com.example.multidatasourceexample.service.dto.event.FailurePaymentEventDto
 import com.example.multidatasourceexample.service.dto.event.SuccessPaymentEventDto
@@ -22,6 +23,13 @@ class PayApplicationEventHandler(
     fun handle(eventDto: CreatedPayEventDto) = runBlocking {
         launch(context = Dispatchers.IO) {
             payService.processPayment(id = eventDto.payId, orderId = eventDto.orderId)
+        }
+    }
+
+    @TransactionalEventListener(phase = TransactionPhase.AFTER_ROLLBACK)
+    fun handle(eventDto: CreateFailedPayEventDto) = runBlocking {
+        launch(context = Dispatchers.IO) {
+            orderService.changeFailStatus(id = eventDto.orderId)
         }
     }
 

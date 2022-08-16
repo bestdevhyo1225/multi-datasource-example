@@ -4,6 +4,7 @@ import com.example.multidatasourceexample.common.constants.ExceptionMessage
 import com.example.multidatasourceexample.domain.pay.entity.Pay
 import com.example.multidatasourceexample.domain.pay.entity.PayStatus
 import com.example.multidatasourceexample.domain.pay.repository.PayRepository
+import com.example.multidatasourceexample.service.dto.event.CreateFailedPayEventDto
 import com.example.multidatasourceexample.service.dto.event.CreatedPayEventDto
 import com.example.multidatasourceexample.service.dto.event.FailurePaymentEventDto
 import com.example.multidatasourceexample.service.dto.event.SuccessPaymentEventDto
@@ -13,6 +14,7 @@ import org.springframework.stereotype.Service
 import org.springframework.transaction.annotation.Transactional
 import org.springframework.transaction.support.TransactionSynchronization
 import org.springframework.transaction.support.TransactionSynchronizationManager
+import java.io.IOException
 
 @Service
 @Transactional(transactionManager = "payTransactionManager")
@@ -23,7 +25,8 @@ class PayService(
 ) {
 
     fun createPay(orderId: Long) {
-        executeOrderFailProcessOnRollback(orderId = orderId)
+//        executeOrderFailProcessOnRollback(orderId = orderId)
+        applicationEventPublisher.publishEvent(CreateFailedPayEventDto(orderId = orderId))
 
         val pay: Pay = payRepository.save(Pay.create(orderId = orderId))
 
@@ -34,15 +37,18 @@ class PayService(
         runCatching {
             payExternalApiCallService.execute()
         }.getOrElse {
-            val pay: Pay = findPay(id = id)
-            pay.changeStatus(status = PayStatus.FAIL)
+            changeStatus(id = id, status = PayStatus.FAIL)
             applicationEventPublisher.publishEvent(FailurePaymentEventDto(orderId = orderId))
-            throw RuntimeException(ExceptionMessage.PAYMENT_REQUEST_FAILURE)
+            throw IOException(ExceptionMessage.PAYMENT_REQUEST_FAILURE)
         }
 
-        val pay: Pay = findPay(id = id)
-        pay.changeStatus(status = PayStatus.COMPLETE)
+        changeStatus(id = id, status = PayStatus.COMPLETE)
         applicationEventPublisher.publishEvent(SuccessPaymentEventDto(orderId = orderId))
+    }
+
+    fun changeStatus(id: Long, status: PayStatus) {
+        val pay: Pay = findPay(id = id)
+        pay.changeStatus(status = status)
     }
 
     private fun executeOrderFailProcessOnRollback(orderId: Long) {
