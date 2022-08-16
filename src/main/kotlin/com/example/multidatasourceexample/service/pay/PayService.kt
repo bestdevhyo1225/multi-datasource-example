@@ -37,15 +37,18 @@ class PayService(
         runCatching {
             payExternalApiCallService.execute()
         }.getOrElse {
-            val pay: Pay = findPay(id = id)
-            pay.changeStatus(status = PayStatus.FAIL)
+            changeStatus(id = id, status = PayStatus.FAIL)
             applicationEventPublisher.publishEvent(FailurePaymentEventDto(orderId = orderId))
             throw IOException(ExceptionMessage.PAYMENT_REQUEST_FAILURE)
         }
 
-        val pay: Pay = findPay(id = id)
-        pay.changeStatus(status = PayStatus.COMPLETE)
+        changeStatus(id = id, status = PayStatus.COMPLETE)
         applicationEventPublisher.publishEvent(SuccessPaymentEventDto(orderId = orderId))
+    }
+
+    fun changeStatus(id: Long, status: PayStatus) {
+        val pay: Pay = findPay(id = id)
+        pay.changeStatus(status = status)
     }
 
     private fun executeOrderFailProcessOnRollback(orderId: Long) {
