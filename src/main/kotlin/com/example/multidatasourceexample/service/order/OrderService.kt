@@ -2,7 +2,6 @@ package com.example.multidatasourceexample.service.order
 
 import com.example.multidatasourceexample.common.constants.ExceptionMessage
 import com.example.multidatasourceexample.domain.order.entity.Order
-import com.example.multidatasourceexample.domain.order.entity.OrderItem
 import com.example.multidatasourceexample.domain.order.entity.OrderStatus
 import com.example.multidatasourceexample.domain.order.repository.OrderRepository
 import com.example.multidatasourceexample.service.dto.CreateOrderDto
@@ -30,19 +29,14 @@ class OrderService(
             TransactionSynchronizationManager.isCurrentTransactionReadOnly(),
         )
 
-        val order: Order = Order.create(
-            memberId = dto.memberId,
-            orderItems = dto.createOrderItemsDto.items.map {
-                OrderItem.create(category = it.category, itemName = it.itemName, purchasePrice = it.purchasePrice)
-            },
-        )
+        val order: Order = dto.toEntity()
 
         orderRepository.save(order)
         applicationEventPublisher.publishEvent(CreatedOrderEventDto(orderId = order.id))
 
         logger.info("[ OUT ] <--- createOrder()")
 
-        return CreateOrderResultDto.of(order = order)
+        return CreateOrderResultDto(order = order)
     }
 
     fun changeCompleteStatus(id: Long) {
