@@ -59,11 +59,7 @@ class OrderItem private constructor(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         val otherOrderItem = (other as? OrderItem) ?: return false
-        return this.id == otherOrderItem.id &&
-            this.category == otherOrderItem.category &&
-            this.itemName == otherOrderItem.itemName &&
-            this.purchasePrice == otherOrderItem.purchasePrice &&
-            this.createdAt == otherOrderItem.createdAt
+        return this.id == otherOrderItem.id
     }
 
     private fun changeId(id: Long) {

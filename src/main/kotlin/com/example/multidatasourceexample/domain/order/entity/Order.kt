@@ -57,11 +57,7 @@ class Order private constructor(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         val otherOrder = (other as? Order) ?: return false
-        return this.id == otherOrder.id &&
-            this.memberId == otherOrder.memberId &&
-            this.status == otherOrder.status &&
-            this.orderedAt == otherOrder.orderedAt &&
-            this.updatedAt == otherOrder.updatedAt
+        return this.id == otherOrder.id
     }
 
     private fun changeId(id: Long) {

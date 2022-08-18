@@ -51,11 +51,7 @@ class Pay private constructor(
     override fun equals(other: Any?): Boolean {
         if (this === other) return true
         val otherPay = (other as? Pay) ?: return false
-        return this.id == otherPay.id &&
-            this.orderId == otherPay.orderId &&
-            this.status == otherPay.status &&
-            this.createdAt == otherPay.createdAt &&
-            this.updatedAt == otherPay.updatedAt
+        return this.id == otherPay.id
     }
 
     private fun changeId(id: Long) {
